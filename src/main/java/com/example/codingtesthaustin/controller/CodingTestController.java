@@ -1,19 +1,17 @@
 package com.example.codingtesthaustin.controller;
 
 
-import com.sun.source.tree.BreakTree;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 
-/**
- *
- * 
- * @author
- */
+
 @RestController
 @RequestMapping("/coding-test")
 public class CodingTestController
@@ -21,7 +19,7 @@ public class CodingTestController
 
 
     /**
-     * 删除字符串的接口
+     * 删除相邻重复字符的接口
      * @param map
      * @return
      */
@@ -39,14 +37,13 @@ public class CodingTestController
             return "error: 请输入inputStr";
         }
 
-        char[] charArr = inputStr.toCharArray();
-        Set<Integer> indexSetToDelete = new HashSet<>();
+        char[] charArr = inputStr.toCharArray();            // 输入的字符串转化为 char[]
+        Set<Integer> indexSetToDelete = new HashSet<>();    // 用于存储需要被删除的字符的下标
+        int repeatCount = 1;                                // 相邻字符已重复次数
+        Boolean existsMoreThan3Repeats = false;             // 是否存在3个相邻的重复字符, 起始默认为 false
 
-        int repeatCount = 1; // 相邻字符串已重复次数
-        Boolean existsMoreThan3Repeats = false; // 是否存在3个相邻的重复字符, 起始默认为 false
-
-
-        char[] finalCharArr = deleteMoreThan3Chars(charArr, repeatCount, indexSetToDelete, existsMoreThan3Repeats);
+        // 删除相邻的重复字符(里面有递归)
+        char[] finalCharArr = deleteMoreThan3RepeatedChars(charArr, repeatCount, indexSetToDelete, existsMoreThan3Repeats);
 
         if(finalCharArr == null || finalCharArr.length == 0){
             return "该字符串已被全删干净";
@@ -58,7 +55,7 @@ public class CodingTestController
 
 
     /**
-     * 替换字符串的接口
+     * 替换相邻重复字符的接口
      * @param map
      * @return
      */
@@ -76,13 +73,13 @@ public class CodingTestController
             return "error: 请输入inputStr";
         }
 
-        char[] charArr = inputStr.toCharArray();
-        Set<Integer> indexSetToReplace = new HashSet<>();
+        char[] charArr = inputStr.toCharArray();            // 输入的字符串转化为 char[]
+        Set<Integer> indexSetToReplace = new HashSet<>();   // 用于存储需要被删除的字符的下标
+        int repeatCount = 1;                                // 相邻字符串已重复次数
+        Boolean existsMoreThan3Repeats = false;             // 是否存在3个相邻的重复字符, 起始默认为 false
 
-        int repeatCount = 1; // 相邻字符串已重复次数
-        Boolean existsMoreThan3Repeats = false; // 是否存在3个相邻的重复字符, 起始默认为 false
-
-        String finalStr = replaceMoreThan3Chars(charArr, repeatCount, indexSetToReplace, existsMoreThan3Repeats);
+        // 替换相邻的重复字符(里面有递归)
+        String finalStr = replaceMoreThan3RepeatedChars(charArr, repeatCount, indexSetToReplace, existsMoreThan3Repeats);
 
         if(finalStr == null || finalStr.length() == 0){
             return "该字符串已被全删干净";
@@ -93,10 +90,18 @@ public class CodingTestController
     }
 
 
-
-    private char[] deleteMoreThan3Chars(char[] charArr, int repeatCount,
+    /**
+     * 删除相邻的重复字符(里面有递归)
+     * @param charArr
+     * @param repeatCount
+     * @param indexSetToDelete
+     * @param existsMoreThan3Repeats
+     * @return
+     */
+    private char[] deleteMoreThan3RepeatedChars(char[] charArr, int repeatCount,
                                              Set<Integer> indexSetToDelete, Boolean existsMoreThan3Repeats) {
 
+        // 循环, 将需要被删除的字符的下标做标记
         for(int i = 0; i < charArr.length; i++){
 
             if(i == 0){ // 第一个字符, 不做任何事情
@@ -125,7 +130,8 @@ public class CodingTestController
 
         }
 
-        // 新建数组, 保存被删除后的结果
+
+        // 新建数组, 获取被删除后的结果
         char[] resultCharArr = new char[charArr.length - indexSetToDelete.size()];
         for(int j = 0, k = 0; j < charArr.length; j++){
             char currentChar = charArr[j];
@@ -134,14 +140,17 @@ public class CodingTestController
             }
         }
 
-        // 如果当前存在重复3次的情况, 则递归
-        // 如果当前不存在任何重复3次的情况, 则无需递归
-        if(existsMoreThan3Repeats){
-            repeatCount = 1;
-            indexSetToDelete.clear(); // 清空 Set
-            existsMoreThan3Repeats = false;
 
-            resultCharArr = deleteMoreThan3Chars(resultCharArr, repeatCount, indexSetToDelete, existsMoreThan3Repeats);
+        // 判断是否需要递归操作
+        // 1.如果当前存在重复3次的情况, 则递归
+        // 2.如果当前不存在任何重复3次的情况, 则无需递归
+        if(existsMoreThan3Repeats){
+            repeatCount = 1;                    // 递归前重置为 1
+            indexSetToDelete.clear();           // 递归前清空 Set
+            existsMoreThan3Repeats = false;     // 递归前设置为 false
+
+            // 递归调用
+            resultCharArr = deleteMoreThan3RepeatedChars(resultCharArr, repeatCount, indexSetToDelete, existsMoreThan3Repeats);
 
         }
 
@@ -149,13 +158,20 @@ public class CodingTestController
     }
 
 
-
-    private String replaceMoreThan3Chars(char[] charArr, int repeatCount,
+    /**
+     * 替换相邻的重复字符(里面有递归)
+     * @param charArr
+     * @param repeatCount
+     * @param indexSetToReplace
+     * @param existsMoreThan3Repeats
+     * @return
+     */
+    private String replaceMoreThan3RepeatedChars(char[] charArr, int repeatCount,
                                         Set<Integer> indexSetToReplace, Boolean existsMoreThan3Repeats) {
-
 
         String resultStr = "";
 
+        // 循环, 将需要被替换的字符的下标做标记
         for(int i = 0; i < charArr.length; i++){
 
             if(i == 0){ // 第一个字符, 不做任何事情
@@ -167,7 +183,7 @@ public class CodingTestController
 
                     if(repeatCount >= 3){ // 重复次数达到3次或以上
 
-                        // 将需要被删除的下标保存到Set里
+                        // 将需要被替换的字符的下标保存到Set里
                         indexSetToReplace.add(i);
                         indexSetToReplace.add(i - 1);
                         indexSetToReplace.add(i - 2);
@@ -184,13 +200,16 @@ public class CodingTestController
 
         }
 
-        // 新建数组, 保存被替换后的结果
-        //char[] resultCharArr = new char[charArr.length - indexSetToReplace.size()];
+
+        // 新建 StringBuffer , 拼接被替换后的结果
         StringBuffer sb = new StringBuffer();
         for(int j = 0; j < charArr.length; j++){
+
             char currentChar = charArr[j];
+
             if(!indexSetToReplace.contains(j)){
                 sb.append(currentChar);
+
             } else {
                 int previousIndex = j - 1;
                 if(previousIndex >= 0){
@@ -201,23 +220,26 @@ public class CodingTestController
                     } else{
                         int ascii = (int)charArr[j];
                         char previousAsciiChar = (char)(ascii - 1); // Ascii 码前一个字符
-                        sb.append(previousAsciiChar);
+                        sb.append(previousAsciiChar); // 拼接被替换后的字符
                     }
                 }
 
             }
         }
 
-        // 如果当前存在重复3次的情况, 则递归
-        // 如果当前不存在任何重复3次的情况, 则无需递归
+        // 判断是否需要递归操作
+        // 1.如果当前存在重复3次的情况, 则递归
+        // 2.如果当前不存在任何重复3次的情况, 则无需递归
         if(existsMoreThan3Repeats){
-            repeatCount = 1;
-            indexSetToReplace.clear(); // 清空 Set
-            existsMoreThan3Repeats = false;
+            repeatCount = 1;                    // 递归前重置为 1
+            indexSetToReplace.clear();          // 递归前清空 Set
+            existsMoreThan3Repeats = false;     // 递归前设置为 false
 
-            resultStr = sb.toString();
+            resultStr = sb.toString();          // 递归将StringBuffer转化为 char[] 进行传参
             char[] resultCharArr = resultStr.toCharArray();
-            resultStr = replaceMoreThan3Chars(resultCharArr, repeatCount, indexSetToReplace, existsMoreThan3Repeats);
+
+            // 递归调用
+            resultStr = replaceMoreThan3RepeatedChars(resultCharArr, repeatCount, indexSetToReplace, existsMoreThan3Repeats);
 
         } else {
             resultStr = sb.toString();
