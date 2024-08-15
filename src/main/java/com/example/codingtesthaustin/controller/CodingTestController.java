@@ -232,14 +232,18 @@ public class CodingTestController
                         continue;
 
                     } else{
+                        if('a' != charArr[j]){
+                            int ascii = (int)charArr[j];
+                            char previousAsciiChar = (char)(ascii - 1); // Ascii 码前一个字符
+                            sb.append(previousAsciiChar); // 拼接被替换后的字符
+                        }
+                    }
+                } else { // 如果是首个字符, 且该字符没有被标记为需要被替换, 则拼接前一个 Ascii字符
+                    if('a' != charArr[j]){
                         int ascii = (int)charArr[j];
                         char previousAsciiChar = (char)(ascii - 1); // Ascii 码前一个字符
                         sb.append(previousAsciiChar); // 拼接被替换后的字符
                     }
-                } else { // 如果是首个字符, 且该字符没有被标记为需要被替换, 则拼接前一个 Ascii字符
-                    int ascii = (int)charArr[j];
-                    char previousAsciiChar = (char)(ascii - 1); // Ascii 码前一个字符
-                    sb.append(previousAsciiChar); // 拼接被替换后的字符
                 }
 
             }
