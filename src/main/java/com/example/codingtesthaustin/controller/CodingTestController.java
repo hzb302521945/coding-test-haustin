@@ -37,6 +37,13 @@ public class CodingTestController
             return "error: 请输入inputStr";
         }
 
+        // 正则表达式校验输入的字符串是不是全是小写字母
+        Boolean isValid = inputStr.matches("[a-z]+");
+        if(!isValid){
+            return "输入无效, 请确保输入的字符串只包含 a-z 的小写字母";
+        }
+
+
         char[] charArr = inputStr.toCharArray();            // 输入的字符串转化为 char[]
         Set<Integer> indexSetToDelete = new HashSet<>();    // 用于存储需要被删除的字符的下标
         int repeatCount = 1;                                // 相邻字符已重复次数
@@ -72,6 +79,13 @@ public class CodingTestController
         if(inputStr == null || inputStr.length() == 0){
             return "error: 请输入inputStr";
         }
+
+        // 正则表达式校验输入的字符串是不是全是小写字母
+        Boolean isValid = inputStr.matches("[a-z]+");
+        if(!isValid){
+            return "输入无效, 请确保输入的字符串只包含 a-z 的小写字母";
+        }
+
 
         char[] charArr = inputStr.toCharArray();            // 输入的字符串转化为 char[]
         Set<Integer> indexSetToReplace = new HashSet<>();   // 用于存储需要被删除的字符的下标
