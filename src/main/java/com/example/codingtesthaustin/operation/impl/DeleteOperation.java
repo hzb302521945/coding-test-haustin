@@ -51,9 +51,10 @@ public class DeleteOperation implements IOperation {
         Set<Integer> indexSetToDelete = new HashSet<>();    // 用于存储需要被删除的字符的下标
         int repeatCount = 1;                                // 相邻字符已重复次数
         Boolean existsMoreThan3Repeats = false;             // 是否存在3个相邻的重复字符, 起始默认为 false
+        Boolean firstInvoke = true;                         // 是否为首次调用递归方法(用于控制控制台的输出内容)
 
         // 开始删除相邻的重复字符(里面包含递归)
-        char[] finalCharArr = deleteMoreThan3RepeatedChars(charArr, repeatCount, indexSetToDelete, existsMoreThan3Repeats);
+        char[] finalCharArr = deleteMoreThan3RepeatedChars(charArr, repeatCount, indexSetToDelete, existsMoreThan3Repeats, firstInvoke);
 
         if(finalCharArr == null || finalCharArr.length == 0){
             return "";
@@ -75,7 +76,8 @@ public class DeleteOperation implements IOperation {
     private char[] deleteMoreThan3RepeatedChars(char[] charArr,
                                                 int repeatCount,
                                                 Set<Integer> indexSetToDelete,
-                                                Boolean existsMoreThan3Repeats) {
+                                                Boolean existsMoreThan3Repeats,
+                                                Boolean firstInvoke) {
 
         // 循环, 将需要被删除的字符的下标做标记
         for(int i = 0; i < charArr.length; i++){
@@ -87,9 +89,10 @@ public class DeleteOperation implements IOperation {
                     repeatCount++;                          // 重复次数 +1
                     if(repeatCount >= 3){                   // 重复次数达到3次或以上
                         // 将需要被删除的下标保存到Set里
-                        indexSetToDelete.add(i);
-                        indexSetToDelete.add(i - 1);
                         indexSetToDelete.add(i - 2);
+                        indexSetToDelete.add(i - 1);
+                        indexSetToDelete.add(i);
+
                         existsMoreThan3Repeats = true;      // 如果为 true , 则需要进行下一步递归
                     }
                 } else {                                    // 当前字符跟前一个字符不同
@@ -97,6 +100,7 @@ public class DeleteOperation implements IOperation {
                 }
             }
         }
+
 
         // 新建数组, 获取被删除后的结果
         char[] resultCharArr = new char[charArr.length - indexSetToDelete.size()];
@@ -107,16 +111,26 @@ public class DeleteOperation implements IOperation {
             }
         }
 
+        // 将本次次操作的结果输出到控制台
+        if(firstInvoke || existsMoreThan3Repeats){
+            if(resultCharArr == null || resultCharArr.length == 0){
+                System.out.println("");
+            } else {
+                System.out.println(new String(resultCharArr));
+            }
+        }
+
         // 判断是否需要递归操作
         // 1.如果当前存在重复3次的情况, 则递归
         // 2.如果当前不存在任何重复3次的情况, 则无需递归
         if(existsMoreThan3Repeats){
+            // 递归参数设置
             repeatCount = 1;                    // 递归前重置为 1
             indexSetToDelete.clear();           // 递归前清空 Set
             existsMoreThan3Repeats = false;     // 递归前设置为 false
 
             // 递归调用
-            resultCharArr = deleteMoreThan3RepeatedChars(resultCharArr, repeatCount, indexSetToDelete, existsMoreThan3Repeats);
+            resultCharArr = deleteMoreThan3RepeatedChars(resultCharArr, repeatCount, indexSetToDelete, existsMoreThan3Repeats, false);
 
         }
 

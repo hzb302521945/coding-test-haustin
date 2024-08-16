@@ -2,10 +2,7 @@ package com.example.codingtesthaustin.operation.impl;
 
 import com.example.codingtesthaustin.operation.IOperation;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -52,9 +49,10 @@ public class ReplaceOperation implements IOperation {
         Set<Integer> indexSetToReplace = new HashSet<>();   // 用于存储需要被删除的字符的下标
         int repeatCount = 1;                                // 相邻字符已重复次数
         Boolean existsMoreThan3Repeats = false;             // 是否存在3个相邻的重复字符, 起始默认为 false
+        Boolean firstInvoke = true;                         // 是否为首次调用递归方法(用于控制控制台的输出内容)
 
         // 开始替换相邻的重复字符(里面包含递归)
-        String finalStr = replaceMoreThan3RepeatedChars(charArr, repeatCount, indexSetToReplace, existsMoreThan3Repeats);
+        String finalStr = replaceMoreThan3RepeatedChars(charArr, repeatCount, indexSetToReplace, existsMoreThan3Repeats, firstInvoke);
 
         if(finalStr == null || finalStr.length() == 0){
             return "";
@@ -76,9 +74,18 @@ public class ReplaceOperation implements IOperation {
     private String replaceMoreThan3RepeatedChars(char[] charArr,
                                                  int repeatCount,
                                                  Set<Integer> indexSetToReplace,
-                                                 Boolean existsMoreThan3Repeats) {
+                                                 Boolean existsMoreThan3Repeats,
+                                                 Boolean firstInvoke) {
 
         String resultStr = "";
+
+        // 重复子字符串的开始下标
+        int repeatedStartIndex = 0;
+        // 重复子字符串的结束下标
+        int repeatedEndIndex = 0;
+        // 用于存储被输出到控制台的 replaced by 信息
+        List<String> replacedByList = new ArrayList<>();
+
 
         // 遍历字符数组, 将所有需要被替换的字符的下标做标记(放入 indexSetToReplace )
         for(int i = 0; i < charArr.length; i++){
@@ -86,29 +93,57 @@ public class ReplaceOperation implements IOperation {
             if(i == 0){ // 第一个字符不做任何处理
 
             } else {    // 从第二个字符开始处理
+
                 if(charArr[i] == charArr[i-1]){             // 当前字符跟前一个字符相同
                     repeatCount++;                          // 重复次数 +1
+                    repeatedEndIndex += 1;
+
                     if(repeatCount >= 3){                   // 重复次数达到3次或以上
+
                         // 将需要被替换的字符的下标保存到Set里
-                        indexSetToReplace.add(i);
-                        indexSetToReplace.add(i - 1);
-                        indexSetToReplace.add(i - 2);
+                        for(int j = 0; j < repeatCount; j++){
+                            indexSetToReplace.add(i - j);
+                        }
+
                         existsMoreThan3Repeats = true;      // 如果为 true , 则需要进行下一步递归
                     }
+
                 } else {                                    // 当前字符跟前一个字符不同
-                    repeatCount = 1;                        // 重置为1
+
+                    // 当前字符的前面几个字符重复次数大于等于 3
+                    if((repeatedEndIndex - repeatedStartIndex) >= 2){
+                        StringBuffer repeatedSubString = new StringBuffer(", ");
+                        for(int k = repeatedStartIndex; k <= repeatedEndIndex; k++){
+                            repeatedSubString.append(charArr[k]);     // 将前面几个重复的字符拼接成字符串
+                        }
+
+                        if('a' != charArr[i - 1]){
+                            int ascii = (int)charArr[i - 1];              // 获取数组的前一个下标位置的字符, 转化成 ascii 码
+                            char previousAsciiChar = (char)(ascii - 1);   // Ascii 码前一个字符
+                            repeatedSubString.append(" is replaced by ").append(previousAsciiChar);
+                        } else {
+                            // 如果重复的字符是 a 则替换为 ""
+                            repeatedSubString.append(" is replaced by \"\"");
+                        }
+
+                        replacedByList.add(repeatedSubString.toString());
+                    }
+
+                    repeatCount = 1;                        // 重置为 1
+                    repeatedStartIndex = i;                 // 重置为当前下标
+                    repeatedEndIndex = i;                   // 重置为当前下标
                 }
             }
         }
 
         // 新建 StringBuffer , 拼接被替换后的结果
         StringBuffer sb = new StringBuffer();
-        for(int j = 0; j < charArr.length; j++){
-            char currentChar = charArr[j];
-            if(indexSetToReplace.contains(j)){
-                if( j == 0 || charArr[j] != charArr[j - 1]){
-                    if('a' != charArr[j]){
-                        int ascii = (int)charArr[j];
+        for(int i = 0; i < charArr.length; i++){
+            char currentChar = charArr[i];
+            if(indexSetToReplace.contains(i)){
+                if( i == 0 || charArr[i] != charArr[i - 1]){
+                    if('a' != charArr[i]){
+                        int ascii = (int)charArr[i];
                         char previousAsciiChar = (char)(ascii - 1);   // Ascii 码前一个字符
                         sb.append(previousAsciiChar);                 // 拼接被替换后的字符
                     }
@@ -116,6 +151,20 @@ public class ReplaceOperation implements IOperation {
             } else {
                 sb.append(currentChar);
             }
+        }
+
+        // 将本次次操作的结果输出到控制台
+        if(firstInvoke || existsMoreThan3Repeats){
+            StringBuffer outputSb = new StringBuffer(sb);
+
+            if(replacedByList.size() > 0){
+                for (int i = 0; i < replacedByList.size(); i++) {
+                    outputSb.append(replacedByList.get(i));  // 拼接 replaced by 信息
+                }
+            }
+
+            System.out.println(new String(outputSb));
+
         }
 
         // 判断是否需要递归操作
@@ -130,7 +179,7 @@ public class ReplaceOperation implements IOperation {
             char[] resultCharArr = resultStr.toCharArray();
 
             // 递归调用
-            resultStr = replaceMoreThan3RepeatedChars(resultCharArr, repeatCount, indexSetToReplace, existsMoreThan3Repeats);
+            resultStr = replaceMoreThan3RepeatedChars(resultCharArr, repeatCount, indexSetToReplace, existsMoreThan3Repeats, false);
 
         } else {
             resultStr = sb.toString();

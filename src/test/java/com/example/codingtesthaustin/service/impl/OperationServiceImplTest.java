@@ -66,6 +66,10 @@ class OperationServiceImplTest {
     }
 
 
+    @Test
+    void testDelete9() { // 所有字符全被删除
+        assertEquals("", operationServiceImpl.deleteRepeatedChars("aaabbbccc"));
+    }
 
 
 
@@ -98,7 +102,7 @@ class OperationServiceImplTest {
 
     @Test
     void testReplace6() { // 需要递归处理(处理一次后返回的字符串仍可被再次处理)
-        assertEquals("aaeef", operationServiceImpl.replaceRepeatedChars("abcccbeef"));
+        assertEquals("d", operationServiceImpl.replaceRepeatedChars("abcccbad"));
     }
 
     @Test
