@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * IOperation 的实现类: 替换操作
+ * Implementation class of IOperation: operation class for replacing
  *
  * @author Haustin
  */
@@ -14,45 +14,45 @@ public class ReplaceOperation implements IOperation {
 
 
     /**
-     * 具体的字符串操作方法
+     * Specific string operation methods
      * @param inputStr
      * @return
      */
     @Override
     public String operate(String inputStr) {
 
-        // jdk8 新特性: 判断空指针
+        // JDK8 new feature: detecting null pointers exception
         Optional<String> optional = Optional.ofNullable(inputStr);
         if(optional.isEmpty()){
-            return "error: inputStr must not be null";
+            return "Error: the inputStr must not be null";
         }
 
-        // 判断字符串长度是否为 0
+        // Determine if the string length is 0
         if(optional.get().length() == 0) {
-            return "error: length of inputStr must not be zero";
+            return "Error: the length of inputStr must not be zero";
         }
 
-        // jdk8 新特性: 判断输入的字符串是不是全部为小写字母
+        // JDK8 new feature: Determine if the input string is all lowercase letters
         List<Character> charList = inputStr.chars().mapToObj(c -> (char)c).collect(Collectors.toList());
         Boolean allLowerCaseLetters = charList.stream().allMatch(c -> (int)c >= 97 && (int)c <= 122);
         if(!allLowerCaseLetters){
-            return "输入无效, 请确保输入的字符串只包含 a-z 的小写字母";
+            return "Error: please ensure that the input string only contains lowercase letters a-z";
         }
 
-        // 字符串长度小于 3 则直接返回
+        // If the string length is less than 3, return directly
         if(optional.get().length() < 3) {
             return optional.get();
         }
 
 
-        char[] charArr = inputStr.toCharArray();            // 输入的字符串转化为 char[]
-        Set<Integer> indexSetToReplace = new HashSet<>();   // 用于存储需要被删除的字符的下标
-        int repeatCount = 1;                                // 相邻字符已重复次数
-        Boolean existsMoreThan3Repeats = false;             // 是否存在3个相邻的重复字符, 起始默认为 false
-        Boolean firstInvoke = true;                         // 是否为首次调用递归方法(用于控制控制台的输出内容)
+        char[] charArr = inputStr.toCharArray();            // Convert the input string to char []
+        Set<Integer> indexSetToReplace = new HashSet<>();   // Used to store character indices that need to be deleted
+        int repeatCount = 1;                                // Repeated times of character
+        Boolean existsMoreThan3Repeats = false;             // Are there 3 adjacent repeated characters, false by default
+        Boolean firstCall = true;                           // Is this the first time calling a recursive method (used to control the output content of the console)
 
-        // 开始替换相邻的重复字符(里面包含递归)
-        String finalStr = replaceMoreThan3RepeatedChars(charArr, repeatCount, indexSetToReplace, existsMoreThan3Repeats, firstInvoke);
+        // Start replacing adjacent repeated characters (including recursion)
+        String finalStr = replaceMoreThan3RepeatedChars(charArr, repeatCount, indexSetToReplace, existsMoreThan3Repeats, firstCall);
 
         if(finalStr == null || finalStr.length() == 0){
             return "";
@@ -64,7 +64,7 @@ public class ReplaceOperation implements IOperation {
 
 
     /**
-     * 替换相邻的重复字符(里面包含递归)
+     * Replacing adjacent repeated characters (including recursion)
      * @param charArr
      * @param repeatCount
      * @param indexSetToReplace
@@ -75,68 +75,68 @@ public class ReplaceOperation implements IOperation {
                                                  int repeatCount,
                                                  Set<Integer> indexSetToReplace,
                                                  Boolean existsMoreThan3Repeats,
-                                                 Boolean firstInvoke) {
+                                                 Boolean firstCall) {
 
         String resultStr = "";
 
-        // 重复子字符串的开始下标
+        // Starting index of repeated substring
         int repeatedStartIndex = 0;
-        // 重复子字符串的结束下标
+        // End index of repeated substring
         int repeatedEndIndex = 0;
-        // 用于存储被输出到控制台的 replaced by 信息
+        // Used to store the "replaced by" informations for outputing to the console
         List<String> replacedByList = new ArrayList<>();
 
 
-        // 遍历字符数组, 将所有需要被替换的字符的下标做标记(放入 indexSetToReplace )
+        // Traverse the array and mark the indices of the characters that need to be deleted((put them into indexSetToReplace)
         for(int i = 0; i < charArr.length; i++){
 
-            if(i == 0){ // 第一个字符不做任何处理
+            if(i == 0){ // The first character, without any processing
 
-            } else {    // 从第二个字符开始处理
+            } else {    // Process starting from the second character
 
-                if(charArr[i] == charArr[i-1]){             // 当前字符跟前一个字符相同
-                    repeatCount++;                          // 重复次数 +1
-                    repeatedEndIndex += 1;
+                if(charArr[i] == charArr[i-1]){             // The current character is the same as the previous character
+                    repeatCount++;                          // Repeated times +1
+                    repeatedEndIndex += 1;                  // End index of repeated substring +1
 
-                    if(repeatCount >= 3){                   // 重复次数达到3次或以上
+                    if(repeatCount >= 3){                   // If the repeated times is 3 or more
 
-                        // 将需要被替换的字符的下标保存到Set里
+                        // Save the index of the character that needs to be replaced to the Set
                         for(int j = 0; j < repeatCount; j++){
                             indexSetToReplace.add(i - j);
                         }
 
-                        existsMoreThan3Repeats = true;      // 如果为 true , 则需要进行下一步递归
+                        existsMoreThan3Repeats = true;      // If true, the next step of recursion is required
                     }
 
-                } else {                                    // 当前字符跟前一个字符不同
+                } else {  // The current character is different from the previous character
 
-                    // 当前字符的前面几个字符重复次数大于等于 3
+                    // The number of repetitions of the previous characters of the current character is greater than or equal to 3
                     if((repeatedEndIndex - repeatedStartIndex) >= 2){
                         StringBuffer repeatedSubString = new StringBuffer(", ");
                         for(int k = repeatedStartIndex; k <= repeatedEndIndex; k++){
-                            repeatedSubString.append(charArr[k]);     // 将前面几个重复的字符拼接成字符串
+                            repeatedSubString.append(charArr[k]);         // Append the previously repeated characters into a string
                         }
 
                         if('a' != charArr[i - 1]){
-                            int ascii = (int)charArr[i - 1];              // 获取数组的前一个下标位置的字符, 转化成 ascii 码
-                            char previousAsciiChar = (char)(ascii - 1);   // Ascii 码前一个字符
+                            int ascii = (int)charArr[i - 1];              // Get the character at the previous index position of the array and convert it to ASCII code
+                            char previousAsciiChar = (char)(ascii - 1);   // Get the revious Ascii code character
                             repeatedSubString.append(" is replaced by ").append(previousAsciiChar);
                         } else {
-                            // 如果重复的字符是 a 则替换为 ""
+                            // If the repeated character is 'a', replace it with ""
                             repeatedSubString.append(" is replaced by \"\"");
                         }
 
                         replacedByList.add(repeatedSubString.toString());
                     }
 
-                    repeatCount = 1;                        // 重置为 1
-                    repeatedStartIndex = i;                 // 重置为当前下标
-                    repeatedEndIndex = i;                   // 重置为当前下标
+                    repeatCount = 1;                        // Reset repeated times to 1
+                    repeatedStartIndex = i;                 // Reset to current index
+                    repeatedEndIndex = i;                   // Reset to current index
                 }
             }
         }
 
-        // 新建 StringBuffer , 拼接被替换后的结果
+        // Create a new StringBuffer to append the replaced results
         StringBuffer sb = new StringBuffer();
         for(int i = 0; i < charArr.length; i++){
             char currentChar = charArr[i];
@@ -144,8 +144,8 @@ public class ReplaceOperation implements IOperation {
                 if( i == 0 || charArr[i] != charArr[i - 1]){
                     if('a' != charArr[i]){
                         int ascii = (int)charArr[i];
-                        char previousAsciiChar = (char)(ascii - 1);   // Ascii 码前一个字符
-                        sb.append(previousAsciiChar);                 // 拼接被替换后的字符
+                        char previousAsciiChar = (char)(ascii - 1);   // Get the revious Ascii code character
+                        sb.append(previousAsciiChar);                 // Append the replaced character
                     }
                 }
             } else {
@@ -153,8 +153,8 @@ public class ReplaceOperation implements IOperation {
             }
         }
 
-        // 将本次次操作的结果输出到控制台
-        if(firstInvoke || existsMoreThan3Repeats){
+        // Output the string to the console
+        if(firstCall || existsMoreThan3Repeats){
             StringBuffer outputSb = new StringBuffer(sb);
 
             if(replacedByList.size() > 0){
@@ -167,18 +167,19 @@ public class ReplaceOperation implements IOperation {
 
         }
 
-        // 判断是否需要递归操作
-        // 1.如果当前存在重复3次的情况, 则递归
-        // 2.如果当前不存在任何重复3次的情况, 则无需递归
+        // Determine whether recursive operation is required
+        // 1.If there is a current situation of repeating 3 times, then recursively
+        // 2.If there is no current situation of repeating 3 times, there is no need for recursion
         if(existsMoreThan3Repeats){
-            repeatCount = 1;                    // 递归前重置为 1
-            indexSetToReplace.clear();          // 递归前清空 Set
-            existsMoreThan3Repeats = false;     // 递归前设置为 false
+            // Recursive parameter setting
+            repeatCount = 1;                   // Reset to 1 before recursion
+            indexSetToReplace.clear();         // Clear the Set before recursion
+            existsMoreThan3Repeats = false;    // Set to false before recursion
 
-            resultStr = sb.toString();          // 递归前将 StringBuffer 转化为 char[] 作为参数进行传递
+            resultStr = sb.toString();         // Convert the JsonBuffer to char [] as a parameter before recursion and pass it as a parameter
             char[] resultCharArr = resultStr.toCharArray();
 
-            // 递归调用
+            // Recursive call
             resultStr = replaceMoreThan3RepeatedChars(resultCharArr, repeatCount, indexSetToReplace, existsMoreThan3Repeats, false);
 
         } else {

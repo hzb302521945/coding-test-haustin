@@ -1,7 +1,7 @@
 package com.example.codingtesthaustin.operation;
 
 /**
- * 字符串的操作类接口
+ * Business interface for operating strings
  *
  * @author Haustin
  */

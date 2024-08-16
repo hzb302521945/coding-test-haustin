@@ -9,7 +9,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * 单元测试类, 测试不同的场景请运行带 @Test 注解的方法
+ * Unit testing class, please run the method with @Test annotation to test different scenarios
+ *
+ * Author: Haustin
  */
 @ExtendWith(MockitoExtension.class)
 class OperationServiceImplTest {
@@ -22,101 +24,121 @@ class OperationServiceImplTest {
     }
 
 
-    // 如下以 testDelete 开头的方法用于测试删除重复字符的操作( DeleteOperation )
+    // The following methods starting with testDelete are used to test the operation of deleting repeated characters (DeleteOperation)
 
     @Test
-    void testDelete1() { // 重复字符位于左边, 且只有一处地方 (重复字符指3个或3个以上的相邻的相同字符, 下同)
+    void testDelete1() {
+        // The repeated character is located on the left and has only one place
+        // (repeated character refers to 3 or more adjacent identical characters, the same below)
         assertEquals("bbceef", operationServiceImpl.deleteRepeatedChars("aaabbceef"));
     }
 
     @Test
-    void testDelete2() { // 重复字符位于中间, 且只有一处地方
+    void testDelete2() {
+        // The repeated character is located in the middle and has only one place
         assertEquals("aaccde", operationServiceImpl.deleteRepeatedChars("aabbbccde"));
     }
 
     @Test
-    void testDelete3() { // 重复字符位于右边, 且只有一处地方
+    void testDelete3() {
+        // The repeated character is located on the right side and has only one place
         assertEquals("aabbcc", operationServiceImpl.deleteRepeatedChars("aabbccddd"));
     }
 
     @Test
-    void testDelete4() { // 重复字符有多处, 且相邻
+    void testDelete4() {
+        // There are multiple repeated characters, and they are adjacent
         assertEquals("aaddee", operationServiceImpl.deleteRepeatedChars("aabbbcccddee"));
     }
 
     @Test
-    void testDelete5() { // 重复字符有多处, 且不相邻
+    void testDelete5() {
+        // There are multiple repeated characters that are not adjacent
         assertEquals("aaccdd", operationServiceImpl.deleteRepeatedChars("aabbbccddeee"));
     }
 
     @Test
-    void testDelete6() { // 需要递归处理(处理一次后返回的字符串仍可被再次处理)
+    void testDelete6() {
+        // Recursive processing is required (the string returned after processing once can still be processed again)
         assertEquals("d", operationServiceImpl.deleteRepeatedChars("aabcccbbad"));
     }
 
 
     @Test
-    void testDelete7() { // 重复字符大于3个
+    void testDelete7() {
+        // Repeated characters greater than 3
         assertEquals("aaccdd", operationServiceImpl.deleteRepeatedChars("aabbbbccdd"));
     }
 
     @Test
-    void testDelete8() { // 无任何重复字符
+    void testDelete8() {
+        // No repeated characters
         assertEquals("abbccdde", operationServiceImpl.deleteRepeatedChars("abbccdde"));
     }
 
 
     @Test
-    void testDelete9() { // 所有字符全被删除
+    void testDelete9() {
+        // All characters will finally be deleted
         assertEquals("", operationServiceImpl.deleteRepeatedChars("aaabbbccc"));
     }
 
 
 
-    // 如下以 testReplace 开头的方法用于测试替换重复字符的操作( ReplaceOperation )
+    // The following methods starting with testReplace are used to test the operation of replacing duplicate characters (replaceOperation)
 
     @Test
-    void testReplace1() { // 重复字符位于左边, 且只有一处地方 (重复字符指3个或3个以上的相邻的相同字符, 下同)
+    void testReplace1() {
+        // The repeated character is located on the left and has only one place
+        // (repeated character refers to 3 or more adjacent identical characters, the same below)
         assertEquals("accde", operationServiceImpl.replaceRepeatedChars("bbbccde"));
     }
 
     @Test
-    void testReplace2() { // 重复字符位于中间, 且只有一处地方
+    void testReplace2() {
+        // The repeated character is located in the middle and has only one place
         assertEquals("abbde", operationServiceImpl.replaceRepeatedChars("abcccde"));
     }
 
     @Test
-    void testReplace3() { // 重复字符位于右边, 且只有一处地方
+    void testReplace3() {
+        // The repeated character is located on the right side and has only one place
         assertEquals("bbcc", operationServiceImpl.replaceRepeatedChars("bbcddd"));
     }
 
     @Test
-    void testReplace4() { // 重复字符有多处, 且相邻
+    void testReplace4() {
+        // There are multiple repeated characters, and they are adjacent
         assertEquals("abbce", operationServiceImpl.replaceRepeatedChars("abcccddde"));
     }
 
     @Test
-    void testReplace5() { // 重复字符有多处, 且不相邻
+    void testReplace5() {
+        // There are multiple repeated characters that are not adjacent
         assertEquals("abbddf", operationServiceImpl.replaceRepeatedChars("abcccdeeef"));
     }
 
     @Test
-    void testReplace6() { // 需要递归处理(处理一次后返回的字符串仍可被再次处理)
+    void testReplace6() {
+        // Recursive processing is required (the string returned after processing once can still be processed again)
         assertEquals("d", operationServiceImpl.replaceRepeatedChars("abcccbad"));
     }
 
     @Test
-    void testReplace7() { // 重复字符大于3个
+    void testReplace7() {
+        // Repeated characters greater than 3
         assertEquals("abbeef", operationServiceImpl.replaceRepeatedChars("abcccceef"));
     }
 
     @Test
-    void testReplace8() { // 无任何重复字符
+    void testReplace8() {
+        // No repeated characters
         assertEquals("abbccddeef", operationServiceImpl.replaceRepeatedChars("abbccddeef"));
     }
 
     @Test
-    void testReplace9() { // 重复字符为 'a', 'a' 需要被替换为 ""
+    void testReplace9() {
+        // The repeated character 'a' needs to be replaced with ''
         assertEquals("ccdd", operationServiceImpl.replaceRepeatedChars("abbbaccdd"));
     }
 

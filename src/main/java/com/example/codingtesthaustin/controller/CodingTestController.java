@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 
 @RestController
@@ -23,7 +22,7 @@ public class CodingTestController
 
 
     /**
-     * 删除相邻重复字符的接口
+     * Interface for deleting adjacent repeated characters
      * @param map
      * @return
      */
@@ -37,31 +36,7 @@ public class CodingTestController
 
         String inputStr = map.get("inputStr");
 
-        // jdk8 新特性: 判断空指针
-        Optional<String> optional = Optional.ofNullable(inputStr);
-        if(optional.isEmpty()){
-            return "error: inputStr must not be null";
-        }
-
-        // 判断字符串长度是否为 0
-        if(optional.get().length() == 0) {
-            return "error: length of inputStr must not be zero";
-        }
-
-        // jdk8 new feature : 判断输入的字符串是不是全部为小写字母
-        List<Character> charList = inputStr.chars().mapToObj(c -> (char)c).collect(Collectors.toList());
-        Boolean allLowerCaseLetters = charList.stream().allMatch(c -> (int)c >= 97 && (int)c <= 122);
-        if(!allLowerCaseLetters){
-            return "error, 请确保输入的字符串只包含 a-z 的小写字母";
-        }
-
-        // 字符串长度小于 3 则直接返回
-        if(optional.get().length() < 3) {
-            return optional.get();
-        }
-
-
-        // 开始删除相邻的重复字符(里面包含递归)
+        // Start deleting adjacent repeated characters (including recursion)
         String finalStr = operationService.deleteRepeatedChars(inputStr);
 
         return finalStr;
@@ -70,7 +45,7 @@ public class CodingTestController
 
 
     /**
-     * 替换相邻重复字符的接口
+     * Interface for replacing adjacent repeated characters
      * @param map
      * @return
      */
@@ -84,38 +59,12 @@ public class CodingTestController
 
         String inputStr = map.get("inputStr");
 
-        // jdk8 新特性: 判断空指针
-        Optional<String> optional = Optional.ofNullable(inputStr);
-        if(optional.isEmpty()){
-            return "error: inputStr must not be null";
-        }
-
-        // 判断字符串长度是否为 0
-        if(optional.get().length() == 0) {
-            return "error: length of inputStr must not be zero";
-        }
-
-        // jdk8 新特性: 判断输入的字符串是不是全部为小写字母
-        List<Character> charList = inputStr.chars().mapToObj(c -> (char)c).collect(Collectors.toList());
-        Boolean allLowerCaseLetters = charList.stream().allMatch(c -> (int)c >= 97 && (int)c <= 122);
-        if(!allLowerCaseLetters){
-            return "error, 请确保输入的字符串只包含 a-z 的小写字母";
-        }
-
-        // 字符串长度小于 3 则直接返回
-        if(optional.get().length() < 3) {
-            return optional.get();
-        }
-
-
-        // 开始替换相邻的重复字符(里面包含递归)
+        // Start replacing adjacent repeated characters (including recursion)
         String finalStr = operationService.replaceRepeatedChars(inputStr);
 
         return finalStr;
 
     }
-
-
 
 
 }

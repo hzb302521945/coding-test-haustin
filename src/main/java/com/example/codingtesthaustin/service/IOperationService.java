@@ -1,17 +1,20 @@
 package com.example.codingtesthaustin.service;
 
+/**
+ * Service interface for operating strings
+ */
 public interface IOperationService {
 
 
     /**
-     * 删除重复字符
+     * Delete repeated characters
      * @param inputStr
      * @return
      */
     String deleteRepeatedChars(String inputStr);
 
     /**
-     * 替换重复字符
+     * Replace repeated characters
      * @param inputStr
      * @return
      */
